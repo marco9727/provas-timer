@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grafico a Ciambella con Timer</title>
+    <!-- Includi la libreria Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- Aggiungi un canvas per il grafico -->
+    <canvas id="donutChart" width="400" height="400"></canvas>
+
+    <script>
+      // Imposta la durata massima e l'orario di inizio
+      const maxDuration = 10000; // 10 secondi in millisecondi
+      let startTime;
+
+      // Ottieni il riferimento al canvas
+      const canvas = document.getElementById("donutChart");
+      const ctx = canvas.getContext("2d");
+
+      // Crea il grafico a ciambella
+      const donutChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Tempo Rimanente"],
+          datasets: [
+            {
+              data: [100], // Percentuale iniziale (100%)
+              backgroundColor: ["blue"],
+            },
+          ],
+        },
+        options: {
+          cutout: "70%", // Imposta la dimensione del foro nel mezzo del ciambellone
+        },
+      });
+
+      // Funzione per aggiornare il grafico
+      function updateChart() {
+        const currentTime = new Date().getTime();
+        const elapsed = currentTime - startTime;
+        const remaining = Math.max(0, maxDuration - elapsed);
+
+        // Calcola la percentuale completata
+        const percentageComplete = (elapsed / maxDuration) * 100;
+
+        // Aggiorna il dataset del grafico
+        donutChart.data.datasets[0].data = [percentageComplete];
+        donutChart.update();
+
+        // Se il tempo è scaduto, interrompi l'aggiornamento
+        if (elapsed < maxDuration) {
+          requestAnimationFrame(updateChart);
+        }
+      }
+
+      // Avvia il timer e l'aggiornamento del grafico
+      function startTimer() {
+        startTime = new Date().getTime();
+        updateChart();
+      }
+
+      // Chiama la funzione di avvio del timer
+      startTimer();
+    </script>
+  </body>
+</html>
